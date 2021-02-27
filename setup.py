@@ -3,15 +3,15 @@
 
 import codecs
 import os
-
+from ssc._version import __version__
 from setuptools import find_packages, setup
 
 # get __version__ from _version.py
-ver_file = os.path.join('skltemplate', '_version.py')
+ver_file = os.path.join('ssc', '_version.py')
 with open(ver_file) as f:
     exec(f.read())
 
-DISTNAME = 'sklearn-template'
+DISTNAME = 'ssc'
 DESCRIPTION = 'A template for scikit-learn compatible packages.'
 with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()

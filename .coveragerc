@@ -2,8 +2,8 @@
 
 [run]
 branch = True
-source = skltemplate
-include = */skltemplate/*
+source = ssc
+include = */ssc/*
 omit =
     */setup.py
 
