@@ -1,4 +1,4 @@
-# Semi Supervised Classifier (SSC)
+# Semi-Supervised Classifier (SSC)
 Enables semi-supervised learning for sci-kit classifiers
 
 ## Requirements
