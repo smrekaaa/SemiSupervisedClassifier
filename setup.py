@@ -13,7 +13,7 @@ with open(ver_file) as f:
 
 DISTNAME = 'ssc'
 DESCRIPTION = 'A template for scikit-learn compatible packages.'
-with codecs.open('README.rst', encoding='utf-8-sig') as f:
+with codecs.open('README.md', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'V. Birodkars, G. Lemaitre'
 MAINTAINER_EMAIL = 'vighneshbirodkar@nyu.edu, g.lemaitre58@gmail.com'
