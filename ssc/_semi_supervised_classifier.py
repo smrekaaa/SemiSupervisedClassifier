@@ -1,6 +1,10 @@
+import time
+
 import numpy as np
 import warnings
 
+import joblib
+import pickle
 from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin, is_classifier
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
@@ -23,18 +27,32 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
     ----------
     Attributes
         ----------
-        classifier_ : trained classifier from base_estimator
+        base_estimator_ :   sci-kit base_estimator
+                            untrained classifier from base_estimator
+        classifier_ :   sci-kit base_estimator
+                        trained classifier from base_estimator
         X_lab_: array-like, shape (n_samples, n_features)
                 The enlarged labeled training dataset.
+        X_:     array-like, shape (n_samples, n_features)
+                Validated labeled dataset.
         X_unlab_: array-like, shape (m_samples, m_features)
                 The unlabeled training input samples.
-        X_new_: array-like, shape (n_samples+m_samples, n_features+m_features)
-                The unlbeled+labeled training input samples.
         y_lab_: array-like, shape (n_samples,),
                 The enlarged labeled target values. An array of int.
+        y_:     array-like, shape (n_samples,),
+                Validated labeled target values. An array of int.
         y_unlab_: array-like, shape (n_samples,),
                   The labeled target values gotten with prediction of X_unlabeled data and base_classifier . An array of int.
-        y_new_:
+        fitted_:    boolean, default=False
+                    tells if classifier_ was already fitted.
+        self_trained_:  boolean, default=False
+                        tells if classifier_ was already self-trained.
+        min_p_:     double, range(0.0, 1.00), default=0.5
+                    Minimum prediction probability limit in self-training process
+        max_p_:     double, range(0.0, 1.00), default=0.9
+                    Starting prediction probability limit in self-training process
+        p_step_:     double, range(0.0, 1.0), default=0.1, < max_p_
+                    Step value for going from max_p to min_p
     """
 
     def __init__(self, base_estimator):
@@ -44,15 +62,23 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
             ----------
             base_estimator : base sci-kit classifier that will be used
             """
+
         # Check if base_estimator is given as a class
         if is_classifier(base_estimator):
-            self.base_estimator = base_estimator
-            self.n_add = 0
+            self.base_estimator_ = base_estimator
+            self.fitted_ = False
+            self.self_trained_ = False
+            self.min_p_ = 0.8
+            self.max_p_ = 0.9
+            self.p_step_ = 0.1
+            self.classes_ = 0.1
+
+
         else:
             raise ValueError('"base_estimator" must be a classifier')
 
     def fit(self, X, y=None, _refit=True):
-        """Fitting function for a classifier.
+        """Fitting function for a classifier. For semi-supervised learning, first fit with _refit=False needs to be called
 
         Parameters
         ----------
@@ -90,86 +116,88 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
             self.y_ = check_array(y,
                                   ensure_2d=False)
 
-        # If _refit=True -> train classifier and save it
+        # If _refit=True
         if _refit:
             self.X_lab_ = self.X_
             self.y_lab_ = self.y_
-            self.classifier_ = self.base_estimator.fit(self.X_lab_, self.y_lab_)
-            self.classes = self.classifier_.classes_
 
-        # If _refit=False ->
-            # Iterativly -> end when there is no more data with >95% prob. conf. or no data left
-            # 1. classify X with base_estimator
-            # Get confidence probabilities
-            # Calibrate probabilitites
-            # sort newData by confidence
-            # add only data with 95% confidence
+            # train classifier and save it
+            self.classifier_ = self.base_estimator_.fit(self.X_lab_, self.y_lab_)
+            # self.classes_ = np.unique(self.y_)
+            self.classes_ = self.classifier_.classes_
+            self.fitted_ = True
 
-            # 2. use newData+oldData for training new clissifier
-            # Save only new classifier
+        # If _refit=False
         else:
+
+            # Check if X_lab_ and y_lab_ were given and classifier_ fitted
+            if not self.fitted_:
+                raise ValueError('No labeled X an y were given. First run fit() with refit_=True.')
+
             self.X_unlab_ = self.X_
 
-            # tu se začne zanka!
-
-            # safe break
+            # Iterative process for classifier self-training
             i = 0
             while self.X_unlab_.size != 0 and i <= 400:
                 i = i+1
 
                 print("x_lab_ len: " + str(len(self.X_lab_)))
-                # 1. calibrate classifier to get predit_proba() method
+
+                # Calibrate classifier to get predit_proba() method and refit it
+                # method='isotonic' - For data with more than 1000 items
                 self.classifier_ = CalibratedClassifierCV(self.classifier_, cv='prefit')
                 self.classifier_.fit(self.X_lab_, self.y_lab_)
 
-                # Predict y with calibrated_classifier
-                predictions = self.base_estimator.predict(self.X_unlab_)
-                print("Predictions")
-                print(predictions[:10])
+                # Get predictions for y with calibrated classifier_
+                predictions = self.base_estimator_.predict(self.X_unlab_)
 
                 # Get predicition probabilities
                 probs = self.classifier_.predict_proba(self.X_unlab_)
                 print("Probs:")
                 print(len(probs))
 
-                # Create a dataframe and merge predictions and probabilities toghether
+                # Create a dataframe and merge predictions and probabilities together
                 df = pd.DataFrame([])
                 df['prediction'] = predictions
+
+                # Gets the highest probability in the array which has the same index as prediciton class
                 df['probs'] = list(map(max, probs))
-                df['id'] = df.index     # redundant
-                print(df.head())
 
-                # Calculate number of rows added to labeled dataset (5% of data)
-                # self.n_add = np.math.floor(len(predictions) * 0.05)
+                # Sort dataframe by probabilities from the highest to lowest
+                df.sort_values(by=['probs'], ascending=False, inplace=True)
+                #print(df.head())
 
-                # get only rows where prediciton probabilities are higher than 80 %
-                df_max = df.loc[df['probs'] >= 0.80]
+                df_max = pd.DataFrame({})   # Dataframe of the highest probabilities rows of 'df'
 
-                # If df_max is empty break out of the loop, because there is nothing to
+                # get only rows where prediction probabilities are higher than p
+                # min_p is set to 0.5 by default, because less would not make sense
+                p = self.max_p_  # starting probability value
+                while df_max.empty and p > self.min_p_:
+                    df_max = df.loc[df['probs'] >= p]
+                    p = p - self.p_step_
+
+                # If df_max is empty return self, because there is nothing to classify anymore
                 if df_max.empty:
                     print("break initeration: " + str(i))
-                    break
-                #df_max_add.sort_values(by=['probs'], ascending=False, inplace=True)
-                #df_max_add = df_max.head(self.n_add)
-                #print(df_max_add.head())
+                    self.self_trained_ = True
+                    return self
 
-                X_new_ = []
-                y_new_ = []
+                print("df_max shape: " + str(df_max.shape))
+
+                X_new_ = []     # temporary array of newly classified inputs
+                y_new_ = []     # temporary array of predictions with high probability
+                i_del = []      # array of indexes to be deleted from unlabeled input set
+
+                # Itterating over data with the highest prediction probabilities
                 for index, row in df_max.iterrows():
                     X_new_.append(self.X_unlab_[index])
                     y_new_.append(predictions[index])
-                    # noinspection PyTypeChecker
-                    np.delete(self.X_unlab_, index, 0)
-                print("x_unlab_ len: " + str(len(self.X_lab_)))
+                    i_del.append(index)
 
-            # for index, p in enumerate(predictions):
-            #     if probs[index][p] >= 0.95:
-            #         self.X_new_.append(self.X_unlab_[index])
-            #         self.y_new_.append(p)
+                self.X_unlab_ = np.delete(self.X_unlab_, i_del, 0)  # Delete all newly classified inputs
+                # print("x_unlab_ len: " + str(len(self.X_unlab_)))
 
-            #print(self.X_new_[:10])
-            # print(self.y_new_)
-
+                # Contenate newly labeled data with old labeled data
                 self.X_lab_ = np.concatenate((self.X_lab_, X_new_))
                 self.y_lab_ = np.concatenate((self.y_lab_, y_new_))
 
@@ -184,44 +212,88 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
             # print('y_unlab_: {}'.format(self.y_unlab_.shape))
             # print('y_new_: {}'.format(self.y_new_.shape))
 
+        self.self_trained_ = True
+
         # Return the classifier
         return self
 
-        #def self_training(self, x, y):
+    def predict(self, X):
+        """Predict data function
 
-# Personal test
-if __name__ == '__main__':
+        Parameters
+        ----------
+        X : array-like, shape (n_samples)
+            The input samples.
 
-    # define dataset
-    X, y = make_classification(n_samples=10000, n_features=6, n_informative=2, n_redundant=0, random_state=1)
-    # split into train and test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.50, random_state=1, stratify=y)
-    # split train into labeled and unlabeled
-    X_train_lab, X_test_unlab, y_train_lab, y_test_unlab = train_test_split(X_train, y_train, test_size=0.50,
-                                                                            random_state=1, stratify=y_train)
-    # summarize training set size
-    print('Labeled Train Set:', X_train_lab.shape, y_train_lab.shape)
-    print('Unlabeled Train Set:', X_test_unlab.shape, y_test_unlab.shape)
-    # summarize test set size
-    print('Test Set:', X_test.shape, y_test.shape)
+        Returns
+        -------
+        self : array-like, shape (n_samples)
+            Returns predictions.
+        """
 
-    # define Classifier
-    knc = KNeighborsClassifier()
-    nbc = GaussianNB()
-    dtc = DecisionTreeClassifier()
+        # Check if classifier was selftrained
+        if not self.self_trained_:
+            raise ValueError("Classifier needs to cal fit() first.")
 
-    # Define semi-supervised classifier
-    ssc_knc = SemiSupervisedClassifier(knc)
-    ssc_nbc = SemiSupervisedClassifier(nbc)
-    ssc_dtc = SemiSupervisedClassifier(dtc)
+        # Validate and convert X
+        X = check_array(X,
+                        accept_sparse=True)
 
-    # _refit=True & y=None
-    # returns error
-    # ssc_knc.fit(X_train_lab, _refit=True)
+        return self.classifier_.predict(X)
 
-    # Train classifier with labeled data
-    trained_classifier = ssc_knc.fit(X=X_train_lab, y=y_train_lab, _refit=True)
-    print(trained_classifier.__class__)
+    def score(self, X, y, sample_weight=None):
+        """
+        Return the mean accuracy on the given test data and labels.
+        In multi-label classification, this is the subset accuracy
+        which is a harsh metric since you require for each sample that
+        each label set be correctly predicted.
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            Test samples.
+        y : array-like of shape (n_samples,) or (n_samples, n_outputs)
+            True labels for `X`.
+        sample_weight : array-like of shape (n_samples,), default=None
+            Sample weights.
+        Returns
+        -------
+        score : float
+            Mean accuracy of ``self.predict(X)`` wrt. `y`.
+        """
+        if X is None:
+            X = np.zeros(shape=(len(y), 1))
+        return super().score(X, y, sample_weight)
 
-    # Semi-supervised classification: Use trained classifier for unlabeled data
-    ssc_knc.fit(X=X_test_unlab, _refit=False)
+    def get_params(self, deep=False):
+        """ Get some class paramaters: min_p, max_p_, p_step_
+
+           Returns
+           -------
+           {} : dictionary,
+               Returns parameters.
+           """
+        return {
+                "base_estimator": self.base_estimator_,
+                # "fitted_": self.fitted_,
+                # "self_trained_": self.self_trained_,
+                # "min_p_": self.min_p_,
+                # "max_p_": self.max_p_,
+                # "p_step_": self.p_step_,
+                # "classes_": self.classes_,
+        }
+
+    def set_params(self, **parameters):
+        """ Sets some class paramaters: min_p, max_p_, p_step_
+
+           Returns
+           -------
+           self :
+                Returns salf.
+           """
+
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)
+
+        return self
+
+
