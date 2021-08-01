@@ -382,7 +382,7 @@ class Experiment:
                 y_test = output[test_index]
 
                 # x_train_1 = labeled train data, x_train_2 = unlabeled train data
-                x_train_1, x_train_2, y_train_1, y_test_2 = train_test_split(x_train, y_train,
+                x_train_1, x_train_2, y_train_1, y_train_2 = train_test_split(x_train, y_train,
                                                                              test_size=t,
                                                                              random_state=123)
                 # model
