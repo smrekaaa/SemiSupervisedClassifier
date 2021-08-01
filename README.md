@@ -72,4 +72,4 @@ Used datasets are taken from the [Kaggle](https://www.kaggle.com/) website, a la
 * [Meal demand forecasting](https://www.kaggle.com/sureshmecad/meal-demand-forecasting)
 
 #### Disclaimer
-_The goal of the project is to create sci-kit learn compatible classifier enabling semi-supervised learning._
+_The goal of the project is to create sci-kit learn compatible classifier enabling semi-supervised learning. And with it to simplify the procces of labeling data._
