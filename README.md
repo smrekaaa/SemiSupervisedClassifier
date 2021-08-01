@@ -10,7 +10,7 @@ Enables semi-supervised learning for sci-kit classifiers
 `numpy, sci-kit learn and pandas`
 
 ## Usage
-Into your working file import SemiSuperviesdClassifier class
+Import SemiSuperviesdClassifier class into your working file SemiSuperviesdClassifier class then you can initialize it and use in your code. As shown in the example bellow.
 
 ### Example
 
