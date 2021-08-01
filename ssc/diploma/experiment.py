@@ -419,64 +419,64 @@ if __name__ == '__main__':
 
     df_ie = exp.make_supervised_classificiations(income_eval_x, income_eval_y)
     df_ie.to_csv("res/df_ie.csv", decimal=".", sep=",", header=True)
-    df_mp = exp.make_supervised_classificiations(mobile_price_x, mobile_price_y)
-    df_mp.to_csv("res/df_mp.csv", decimal=".", sep=",", header=True)
-    df_md = exp.make_supervised_classificiations(meal_demand_x, meal_demand_y)
-    df_md.to_csv("res/df_md.csv", decimal=".", sep=",", header=True)
-
-    df_ie_ss = exp.make_semi_supervised_classificiations(income_eval_x, income_eval_y)
-    df_ie_ss.to_csv("res/df_ie_ss.csv", decimal=".", sep=",", header=True)
-    df_mp_ss = exp.make_semi_supervised_classificiations(mobile_price_x, mobile_price_y)
-    df_mp_ss.to_csv("res/df_mp_ss.csv", decimal=".", sep=",", header=True)
-    df_md_ss = exp.make_semi_supervised_classificiations(meal_demand_x, meal_demand_y)
-    df_md_ss.to_csv("res/df_md_ss.csv", decimal=".", sep=",", header=True)
-
-    # Experiment 2 -----------------------------------------------------------------------------------------------------
-
-    # 25 % labeled training data
-    df_ie_2a = exp.make_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.75)
-    df_ie_2a.to_csv("res/df_ie_2a.csv", decimal=".", sep=",", header=True)
-    df_mp_2a = exp.make_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.75)
-    df_mp_2a.to_csv("res/df_mp_2a.csv", decimal=".", sep=",", header=True)
-    df_md_2a = exp.make_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.75)
-    df_md_2a.to_csv("res/df_md_2a.csv", decimal=".", sep=",", header=True)
-
-    df_ie_ss_2a = exp.make_semi_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.75)
-    df_ie_ss_2a.to_csv("res/df_ie_ss_2a.csv", decimal=".", sep=",", header=True)
-    df_mp_ss_2a = exp.make_semi_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.75)
-    df_mp_ss_2a.to_csv("res/df_mp_ss_2a.csv", decimal=".", sep=",", header=True)
-    df_md_ss_2a = exp.make_semi_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.75)
-    df_md_ss_2a.to_csv("res/df_md_ss_2a.csv", decimal=".", sep=",", header=True)
-
-    # 50 % labeled training data
-    df_ie_2b = exp.make_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.5)
-    df_ie_2b.to_csv("res/df_ie_2b.csv", decimal=".", sep=",", header=True)
-    df_mp_2b = exp.make_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.5)
-    df_mp_2b.to_csv("res/df_mp_2b.csv", decimal=".", sep=",", header=True)
-    df_md_2b = exp.make_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.5)
-    df_md_2b.to_csv("res/df_md_2b.csv", decimal=".", sep=",", header=True)
-
-    df_ie_ss_2b = exp.make_semi_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.5)
-    df_ie_ss_2b.to_csv("res/df_ie_ss_2b.csv", decimal=".", sep=",", header=True)
-    df_mp_ss_2b = exp.make_semi_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.5)
-    df_mp_ss_2b.to_csv("res/df_mp_ss_2b.csv", decimal=".", sep=",", header=True)
-    df_md_ss_2b = exp.make_semi_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.5)
-    df_md_ss_2b.to_csv("res/df_md_ss_2b.csv", decimal=".", sep=",", header=True)
-
-    # 75 % labeled training data
-    df_ie_2c = exp.make_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.25)
-    df_ie_2c.to_csv("res/df_ie_2c.csv", decimal=".", sep=",", header=True)
-    df_mp_2c = exp.make_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.25)
-    df_mp_2c.to_csv("res/df_mp_2c.csv", decimal=".", sep=",", header=True)
-    df_md_2c = exp.make_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.25)
-    df_md_2c.to_csv("res/df_md_2c.csv", decimal=".", sep=",", header=True)
-
-    df_ie_ss_2c = exp.make_semi_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.25)
-    df_ie_ss_2c.to_csv("res/df_ie_ss_2c.csv", decimal=".", sep=",", header=True)
-    df_mp_ss_2c = exp.make_semi_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.25)
-    df_mp_ss_2c.to_csv("res/df_mp_ss_2c.csv", decimal=".", sep=",", header=True)
-    df_md_ss_2c = exp.make_semi_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.25)
-    df_md_ss_2c.to_csv("res/df_md_ss_2c.csv", decimal=".", sep=",", header=True)
+    # df_mp = exp.make_supervised_classificiations(mobile_price_x, mobile_price_y)
+    # df_mp.to_csv("res/df_mp.csv", decimal=".", sep=",", header=True)
+    # df_md = exp.make_supervised_classificiations(meal_demand_x, meal_demand_y)
+    # df_md.to_csv("res/df_md.csv", decimal=".", sep=",", header=True)
+    #
+    # df_ie_ss = exp.make_semi_supervised_classificiations(income_eval_x, income_eval_y)
+    # df_ie_ss.to_csv("res/df_ie_ss.csv", decimal=".", sep=",", header=True)
+    # df_mp_ss = exp.make_semi_supervised_classificiations(mobile_price_x, mobile_price_y)
+    # df_mp_ss.to_csv("res/df_mp_ss.csv", decimal=".", sep=",", header=True)
+    # df_md_ss = exp.make_semi_supervised_classificiations(meal_demand_x, meal_demand_y)
+    # df_md_ss.to_csv("res/df_md_ss.csv", decimal=".", sep=",", header=True)
+    #
+    # # Experiment 2 -----------------------------------------------------------------------------------------------------
+    #
+    # # 25 % labeled training data
+    # df_ie_2a = exp.make_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.75)
+    # df_ie_2a.to_csv("res/df_ie_2a.csv", decimal=".", sep=",", header=True)
+    # df_mp_2a = exp.make_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.75)
+    # df_mp_2a.to_csv("res/df_mp_2a.csv", decimal=".", sep=",", header=True)
+    # df_md_2a = exp.make_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.75)
+    # df_md_2a.to_csv("res/df_md_2a.csv", decimal=".", sep=",", header=True)
+    #
+    # df_ie_ss_2a = exp.make_semi_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.75)
+    # df_ie_ss_2a.to_csv("res/df_ie_ss_2a.csv", decimal=".", sep=",", header=True)
+    # df_mp_ss_2a = exp.make_semi_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.75)
+    # df_mp_ss_2a.to_csv("res/df_mp_ss_2a.csv", decimal=".", sep=",", header=True)
+    # df_md_ss_2a = exp.make_semi_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.75)
+    # df_md_ss_2a.to_csv("res/df_md_ss_2a.csv", decimal=".", sep=",", header=True)
+    #
+    # # 50 % labeled training data
+    # df_ie_2b = exp.make_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.5)
+    # df_ie_2b.to_csv("res/df_ie_2b.csv", decimal=".", sep=",", header=True)
+    # df_mp_2b = exp.make_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.5)
+    # df_mp_2b.to_csv("res/df_mp_2b.csv", decimal=".", sep=",", header=True)
+    # df_md_2b = exp.make_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.5)
+    # df_md_2b.to_csv("res/df_md_2b.csv", decimal=".", sep=",", header=True)
+    #
+    # df_ie_ss_2b = exp.make_semi_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.5)
+    # df_ie_ss_2b.to_csv("res/df_ie_ss_2b.csv", decimal=".", sep=",", header=True)
+    # df_mp_ss_2b = exp.make_semi_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.5)
+    # df_mp_ss_2b.to_csv("res/df_mp_ss_2b.csv", decimal=".", sep=",", header=True)
+    # df_md_ss_2b = exp.make_semi_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.5)
+    # df_md_ss_2b.to_csv("res/df_md_ss_2b.csv", decimal=".", sep=",", header=True)
+    #
+    # # 75 % labeled training data
+    # df_ie_2c = exp.make_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.25)
+    # df_ie_2c.to_csv("res/df_ie_2c.csv", decimal=".", sep=",", header=True)
+    # df_mp_2c = exp.make_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.25)
+    # df_mp_2c.to_csv("res/df_mp_2c.csv", decimal=".", sep=",", header=True)
+    # df_md_2c = exp.make_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.25)
+    # df_md_2c.to_csv("res/df_md_2c.csv", decimal=".", sep=",", header=True)
+    #
+    # df_ie_ss_2c = exp.make_semi_supervised_classificiations_e2(income_eval_x, income_eval_y, 0.25)
+    # df_ie_ss_2c.to_csv("res/df_ie_ss_2c.csv", decimal=".", sep=",", header=True)
+    # df_mp_ss_2c = exp.make_semi_supervised_classificiations_e2(mobile_price_x, mobile_price_y, 0.25)
+    # df_mp_ss_2c.to_csv("res/df_mp_ss_2c.csv", decimal=".", sep=",", header=True)
+    # df_md_ss_2c = exp.make_semi_supervised_classificiations_e2(meal_demand_x, meal_demand_y, 0.25)
+    # df_md_ss_2c.to_csv("res/df_md_ss_2c.csv", decimal=".", sep=",", header=True)
 
 
 
