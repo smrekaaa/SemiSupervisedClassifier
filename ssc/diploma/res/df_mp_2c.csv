@@ -1,0 +1,3 @@
+,KNeighborsClassifier,GaussianNB,DecisionTreeClassifier
+accuray,0.9225,0.8074999999999999,0.843
+f1_score,0.922551655628148,0.8079587078102337,0.8422858704476746

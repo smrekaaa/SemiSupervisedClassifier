@@ -1,0 +1,8 @@
+;;KNeighborsClassifier;;GaussianNB;;DecisionTreeClassifier;
+;;Navadna klasifikacija;Delno-Nadzorovana;Navadna klasifikacija;Delno-Nadzorovana;Navadna klasifikacija;Delno-Nadzorovana
+Income evaluation;accuracy;0.7761434076217619;;0.7951538134835648;;0.8122908021204;
+;f1 score;0.638275631971059;;0.6489262473242434;;0.7448694947103051;
+Mobile price range;accuracy;;;;;;
+;f1 score;;;;;;
+Meal demand;accuracy;;;;;;
+;f1 score;;;;;;

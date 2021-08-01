@@ -3,22 +3,10 @@ import time
 import numpy as np
 import warnings
 
-import joblib
-import pickle
-from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin, is_classifier
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
-from sklearn.utils.multiclass import unique_labels
-from sklearn.metrics import euclidean_distances
+from sklearn.base import BaseEstimator, ClassifierMixin, is_classifier
+from sklearn.utils.validation import check_array
 from sklearn.calibration import CalibratedClassifierCV
 import pandas as pd
-
-# Test Program
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
-
 
 class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
     """ Base class for semi-supervised classifier
@@ -123,7 +111,6 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
 
             # train classifier and save it
             self.classifier_ = self.base_estimator_.fit(self.X_lab_, self.y_lab_)
-            # self.classes_ = np.unique(self.y_)
             self.classes_ = self.classifier_.classes_
             self.fitted_ = True
 
@@ -137,11 +124,7 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
             self.X_unlab_ = self.X_
 
             # Iterative process for classifier self-training
-            i = 0
-            while self.X_unlab_.size != 0 and i <= 400:
-                i = i+1
-
-                print("x_lab_ len: " + str(len(self.X_lab_)))
+            while self.X_unlab_.size != 0:
 
                 # Calibrate classifier to get predit_proba() method and refit it
                 # method='isotonic' - For data with more than 1000 items
@@ -153,8 +136,6 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
 
                 # Get predicition probabilities
                 probs = self.classifier_.predict_proba(self.X_unlab_)
-                print("Probs:")
-                print(len(probs))
 
                 # Create a dataframe and merge predictions and probabilities together
                 df = pd.DataFrame([])
@@ -165,7 +146,6 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
 
                 # Sort dataframe by probabilities from the highest to lowest
                 df.sort_values(by=['probs'], ascending=False, inplace=True)
-                #print(df.head())
 
                 df_max = pd.DataFrame({})   # Dataframe of the highest probabilities rows of 'df'
 
@@ -178,11 +158,8 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
 
                 # If df_max is empty return self, because there is nothing to classify anymore
                 if df_max.empty:
-                    print("break initeration: " + str(i))
                     self.self_trained_ = True
                     return self
-
-                print("df_max shape: " + str(df_max.shape))
 
                 X_new_ = []     # temporary array of newly classified inputs
                 y_new_ = []     # temporary array of predictions with high probability
@@ -195,22 +172,10 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
                     i_del.append(index)
 
                 self.X_unlab_ = np.delete(self.X_unlab_, i_del, 0)  # Delete all newly classified inputs
-                # print("x_unlab_ len: " + str(len(self.X_unlab_)))
 
                 # Contenate newly labeled data with old labeled data
                 self.X_lab_ = np.concatenate((self.X_lab_, X_new_))
                 self.y_lab_ = np.concatenate((self.y_lab_, y_new_))
-
-            # Check values
-            # print('X_: {}'.format(self.X_.shape))
-            # print('X_lab_: {}'.format(self.X_lab_.shape))
-            # print('X_unlab_: {}'.format(self.X_unlab_.shape))
-            # print('X_new_: {}'.format(self.X_new_.shape))
-            #
-            # print('y_: {}'.format(self.y_.shape))
-            # print('y_lab_: {}'.format(self.y_lab_.shape))
-            # print('y_unlab_: {}'.format(self.y_unlab_.shape))
-            # print('y_new_: {}'.format(self.y_new_.shape))
 
         self.self_trained_ = True
 
@@ -273,13 +238,9 @@ class SemiSupervisedClassifier(ClassifierMixin, BaseEstimator):
                Returns parameters.
            """
         return {
-                "base_estimator": self.base_estimator_,
-                # "fitted_": self.fitted_,
-                # "self_trained_": self.self_trained_,
-                # "min_p_": self.min_p_,
-                # "max_p_": self.max_p_,
-                # "p_step_": self.p_step_,
-                # "classes_": self.classes_,
+                "min_p_": self.min_p_,
+                "max_p_": self.max_p_,
+                "p_step_": self.p_step_,
         }
 
     def set_params(self, **parameters):
