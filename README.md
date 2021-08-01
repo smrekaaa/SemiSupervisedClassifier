@@ -1,4 +1,4 @@
-# Semi Supervised Classifier (CSS)
+# Semi-Supervised Classifier (SSC)
 Enables semi-supervised learning for sci-kit classifiers
 
 ## Requirements
@@ -9,7 +9,7 @@ Enables semi-supervised learning for sci-kit classifiers
 ### Dependencies in order for the project to run are:
 
 ## Usage
-Currently only main class in _semi_supervised_classifier can be run
+Currently only main class in ssc/_semi_supervised_classifier.py file can be run.
 
 ### Example
 
